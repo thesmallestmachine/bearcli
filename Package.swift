@@ -7,7 +7,8 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "bearcli",
-            path: "Sources/bearcli"
+            path: "Sources/bearcli",
+            exclude: ["Info.plist"]
         )
     ]
 )
