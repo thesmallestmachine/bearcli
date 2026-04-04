@@ -22,12 +22,12 @@ cd bearcli
 ./build.sh
 ```
 
-The build script compiles the source, packages it into an app bundle at `~/development/bearcli/bearcli.app/`, and registers the URL scheme with macOS Launch Services.
+The build script compiles the source, packages it into an app bundle at `~/.local/share/bearcli/bearcli.app/`, and registers the URL scheme with macOS Launch Services.
 
 To make `bearcli` available as a command, add an alias to your `~/.zshrc`:
 
 ```bash
-echo 'alias bearcli="$HOME/development/bearcli/bearcli.app/Contents/MacOS/bearcli"' >> ~/.zshrc
+echo 'alias bearcli="$HOME/.local/share/bearcli/bearcli.app/Contents/MacOS/bearcli"' >> ~/.zshrc
 source ~/.zshrc
 ```
 

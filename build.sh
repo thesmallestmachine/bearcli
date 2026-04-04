@@ -2,12 +2,12 @@
 # Build bearcli and package into app bundle
 #
 # Source code lives in ~/Developer/bearcli/
-# Executable app bundle lives in ~/development/bearcli/bearcli.app/
+# Executable app bundle lives in ~/.local/share/bearcli/bearcli.app/
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-INSTALL_DIR="$HOME/development/bearcli"
+INSTALL_DIR="$HOME/.local/share/bearcli"
 
 cd "$SCRIPT_DIR"
 

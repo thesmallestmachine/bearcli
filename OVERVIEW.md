@@ -48,7 +48,7 @@ macOS only routes URL scheme callbacks to registered app bundles (not bare execu
         ├── main.swift            # All application code
         └── Info.plist            # URL scheme registration (bundled into .app)
 
-~/development/bearcli/           # Installed executable
+~/.local/share/bearcli/           # Installed executable
 └── bearcli.app/
     └── Contents/
         ├── Info.plist            # Copied from source during build
@@ -205,7 +205,7 @@ cd ~/Developer/bearcli
 ./build.sh
 ```
 
-This compiles the Swift source, copies the binary into the app bundle at `~/development/bearcli/bearcli.app/`, and registers the URL scheme with Launch Services.
+This compiles the Swift source, copies the binary into the app bundle at `~/.local/share/bearcli/bearcli.app/`, and registers the URL scheme with Launch Services.
 
 ## Dependencies
 
