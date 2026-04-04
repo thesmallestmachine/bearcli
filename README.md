@@ -13,7 +13,7 @@ BearCLI bridges Bear's x-callback-url API with stdout, making it possible for au
 ## Installation
 
 ```bash
-git clone https://github.com/WayneAtHT/bearcli.git
+git clone https://github.com/thesmallestmachine/bearcli.git
 cd bearcli
 ./build.sh
 ```
