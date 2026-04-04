@@ -104,6 +104,89 @@ struct BearAPI {
         return buildBearURL(action: "tags", params: params)
     }
 
+    func openTag(name: String) -> URL? {
+        var params: [String: String] = [:]
+        params["name"] = name
+        params["token"] = token
+        params["show_window"] = "no"
+        params["x-success"] = "\(callbackScheme)://success"
+        params["x-error"] = "\(callbackScheme)://error"
+        return buildBearURL(action: "open-tag", params: params)
+    }
+
+    func untagged(search: String? = nil) -> URL? {
+        var params: [String: String] = [:]
+        if let search = search { params["search"] = search }
+        params["token"] = token
+        params["show_window"] = "no"
+        params["x-success"] = "\(callbackScheme)://success"
+        params["x-error"] = "\(callbackScheme)://error"
+        return buildBearURL(action: "untagged", params: params)
+    }
+
+    func todo(search: String? = nil) -> URL? {
+        var params: [String: String] = [:]
+        if let search = search { params["search"] = search }
+        params["token"] = token
+        params["show_window"] = "no"
+        params["x-success"] = "\(callbackScheme)://success"
+        params["x-error"] = "\(callbackScheme)://error"
+        return buildBearURL(action: "todo", params: params)
+    }
+
+    func today(search: String? = nil) -> URL? {
+        var params: [String: String] = [:]
+        if let search = search { params["search"] = search }
+        params["token"] = token
+        params["show_window"] = "no"
+        params["x-success"] = "\(callbackScheme)://success"
+        params["x-error"] = "\(callbackScheme)://error"
+        return buildBearURL(action: "today", params: params)
+    }
+
+    func addText(id: String? = nil, title: String? = nil, text: String, mode: String? = nil, newLine: String? = nil, tags: String? = nil, excludeTrashed: String? = nil, timestamp: String? = nil) -> URL? {
+        var params: [String: String] = [:]
+        if let id = id { params["id"] = id }
+        if let title = title { params["title"] = title }
+        params["text"] = text
+        if let mode = mode { params["mode"] = mode }
+        if let newLine = newLine { params["new_line"] = newLine }
+        if let tags = tags { params["tags"] = tags }
+        if let excludeTrashed = excludeTrashed { params["exclude_trashed"] = excludeTrashed }
+        if let timestamp = timestamp { params["timestamp"] = timestamp }
+        params["token"] = token
+        params["show_window"] = "no"
+        params["open_note"] = "no"
+        params["x-success"] = "\(callbackScheme)://success"
+        params["x-error"] = "\(callbackScheme)://error"
+        return buildBearURL(action: "add-text", params: params)
+    }
+
+    func grabURL(url: String, tags: String? = nil, pin: String? = nil) -> URL? {
+        var params: [String: String] = [:]
+        params["url"] = url
+        if let tags = tags { params["tags"] = tags }
+        if let pin = pin { params["pin"] = pin }
+        params["show_window"] = "no"
+        params["x-success"] = "\(callbackScheme)://success"
+        params["x-error"] = "\(callbackScheme)://error"
+        return buildBearURL(action: "grab-url", params: params)
+    }
+
+    func create(title: String? = nil, text: String? = nil, tags: String? = nil, pin: String? = nil, timestamp: String? = nil) -> URL? {
+        var params: [String: String] = [:]
+        if let title = title { params["title"] = title }
+        if let text = text { params["text"] = text }
+        if let tags = tags { params["tags"] = tags }
+        if let pin = pin { params["pin"] = pin }
+        if let timestamp = timestamp { params["timestamp"] = timestamp }
+        params["show_window"] = "no"
+        params["open_note"] = "no"
+        params["x-success"] = "\(callbackScheme)://success"
+        params["x-error"] = "\(callbackScheme)://error"
+        return buildBearURL(action: "create", params: params)
+    }
+
     private func buildBearURL(action: String, params: [String: String]) -> URL? {
         var components = URLComponents()
         components.scheme = "bear"
@@ -118,7 +201,7 @@ struct BearAPI {
 
 func printUsage() {
     let usage = """
-    bear-cli: Read and search Bear notes from the command line
+    bear-cli: Read, search, and write Bear notes from the command line
 
     Usage:
       bear-cli open-note --title "Note Title" --token TOKEN
@@ -126,16 +209,47 @@ func printUsage() {
       bear-cli search --term "search query" --token TOKEN
       bear-cli search --tag "tag/name" --token TOKEN
       bear-cli tags --token TOKEN
+      bear-cli open-tag --name "tag/name" --token TOKEN
+      bear-cli untagged --token TOKEN
+      bear-cli untagged --search "filter" --token TOKEN
+      bear-cli todo --token TOKEN
+      bear-cli today --token TOKEN
+      bear-cli add-text --title "Note Title" --text "New text" --token TOKEN
+      bear-cli add-text --id NOTE_ID --text "New text" --mode prepend --token TOKEN
+      bear-cli grab-url --url "https://example.com" --token TOKEN
+      bear-cli create --title "New Note" --text "Content" --tags "tag1,tag2" --token TOKEN
+
+    Commands:
+      open-note  Read a note by title or ID
+      search     Search notes by term or tag
+      tags       List all tags
+      open-tag   List notes with a specific tag
+      untagged   List notes without tags
+      todo       List notes containing todo items
+      today      List notes created or modified today
+      add-text   Append or prepend text to an existing note
+      grab-url   Create a note from a web page URL
+      create     Create a new note
 
     Options:
-      --title    Note title (for open-note)
-      --id       Note unique identifier (for open-note)
-      --term     Search term (for search)
-      --tag      Tag name (for search)
-      --token    Bear API token
-      --timeout  Timeout in seconds (default: 10)
-      --json     Output raw JSON response
-      --help     Show this help message
+      --title           Note title (for open-note, add-text)
+      --id              Note unique identifier (for open-note, add-text)
+      --term            Search term (for search)
+      --tag             Tag name (for search)
+      --name            Tag name (for open-tag)
+      --search          Filter string (for untagged, todo, today)
+      --text            Text content (for add-text, create)
+      --mode            Insert mode: append, prepend, replace_all, replace (for add-text)
+      --new-line        If "yes", adds text on a new line in append mode (for add-text)
+      --tags            Comma-separated tags (for add-text, grab-url, create)
+      --url             Web page URL (for grab-url)
+      --pin             If "yes", pin the note (for grab-url, create)
+      --timestamp       If "yes", prepend date/time (for add-text, create)
+      --exclude-trashed If "yes", exclude trashed notes (for add-text)
+      --token           Bear API token (required)
+      --timeout         Timeout in seconds (default: 10)
+      --json            Output raw JSON response
+      --help            Show this help message
     """
     print(usage)
 }
@@ -214,8 +328,60 @@ case "search":
 case "tags":
     bearURL = api.tags()
 
+case "open-tag":
+    guard let name = parsedArgs["name"] else {
+        fputs("Error: --name is required for open-tag\n", stderr)
+        exit(1)
+    }
+    bearURL = api.openTag(name: name)
+
+case "untagged":
+    bearURL = api.untagged(search: parsedArgs["search"])
+
+case "todo":
+    bearURL = api.todo(search: parsedArgs["search"])
+
+case "today":
+    bearURL = api.today(search: parsedArgs["search"])
+
+case "add-text":
+    if parsedArgs["title"] == nil && parsedArgs["id"] == nil {
+        fputs("Error: --title or --id is required for add-text\n", stderr)
+        exit(1)
+    }
+    guard let text = parsedArgs["text"] else {
+        fputs("Error: --text is required for add-text\n", stderr)
+        exit(1)
+    }
+    bearURL = api.addText(
+        id: parsedArgs["id"],
+        title: parsedArgs["title"],
+        text: text,
+        mode: parsedArgs["mode"],
+        newLine: parsedArgs["new-line"],
+        tags: parsedArgs["tags"],
+        excludeTrashed: parsedArgs["exclude-trashed"],
+        timestamp: parsedArgs["timestamp"]
+    )
+
+case "grab-url":
+    guard let url = parsedArgs["url"] else {
+        fputs("Error: --url is required for grab-url\n", stderr)
+        exit(1)
+    }
+    bearURL = api.grabURL(url: url, tags: parsedArgs["tags"], pin: parsedArgs["pin"])
+
+case "create":
+    bearURL = api.create(
+        title: parsedArgs["title"],
+        text: parsedArgs["text"],
+        tags: parsedArgs["tags"],
+        pin: parsedArgs["pin"],
+        timestamp: parsedArgs["timestamp"]
+    )
+
 default:
-    fputs("Error: Unknown command '\(command)'. Use open-note, search, or tags.\n", stderr)
+    fputs("Error: Unknown command '\(command)'. Use open-note, search, tags, open-tag, untagged, todo, today, add-text, grab-url, or create.\n", stderr)
     exit(1)
 }
 
@@ -279,6 +445,34 @@ if let result = handler.result {
             if let tags = result["tags"] {
                 print(tags)
             } else {
+                for (key, value) in result.sorted(by: { $0.key < $1.key }) {
+                    print("\(key): \(value)")
+                }
+            }
+        } else if command == "open-tag" || command == "untagged" || command == "todo" || command == "today" {
+            if let notes = result["notes"] {
+                print(notes)
+            } else {
+                for (key, value) in result.sorted(by: { $0.key < $1.key }) {
+                    print("\(key): \(value)")
+                }
+            }
+        } else if command == "add-text" {
+            if let noteText = result["note"] {
+                print(noteText)
+            } else {
+                for (key, value) in result.sorted(by: { $0.key < $1.key }) {
+                    print("\(key): \(value)")
+                }
+            }
+        } else if command == "grab-url" || command == "create" {
+            if let identifier = result["identifier"] {
+                print("identifier: \(identifier)")
+            }
+            if let title = result["title"] {
+                print("title: \(title)")
+            }
+            if result["identifier"] == nil && result["title"] == nil {
                 for (key, value) in result.sorted(by: { $0.key < $1.key }) {
                     print("\(key): \(value)")
                 }
