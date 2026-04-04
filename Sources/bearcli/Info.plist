@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>com.localdev.bear-cli</string>
+    <string>com.localdev.bearcli</string>
     <key>CFBundleName</key>
     <string>BearCLI</string>
     <key>CFBundleDisplayName</key>
     <string>BearCLI</string>
     <key>CFBundleExecutable</key>
-    <string>bear-cli</string>
+    <string>bearcli</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleVersion</key>
@@ -23,7 +23,7 @@
             <string>Bear CLI Callback</string>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>bear-cli-callback</string>
+                <string>bearcli-callback</string>
             </array>
         </dict>
     </array>

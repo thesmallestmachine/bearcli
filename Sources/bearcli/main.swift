@@ -71,7 +71,7 @@ class CallbackHandler: NSObject, NSApplicationDelegate {
 
 struct BearAPI {
     let token: String
-    let callbackScheme = "bear-cli-callback"
+    let callbackScheme = "bearcli-callback"
 
     func openNote(title: String? = nil, id: String? = nil) -> URL? {
         var params: [String: String] = [:]
@@ -201,23 +201,23 @@ struct BearAPI {
 
 func printUsage() {
     let usage = """
-    bear-cli: Read, search, and write Bear notes from the command line
+    bearcli: Read, search, and write Bear notes from the command line
 
     Usage:
-      bear-cli open-note --title "Note Title" --token TOKEN
-      bear-cli open-note --id NOTE_ID --token TOKEN
-      bear-cli search --term "search query" --token TOKEN
-      bear-cli search --tag "tag/name" --token TOKEN
-      bear-cli tags --token TOKEN
-      bear-cli open-tag --name "tag/name" --token TOKEN
-      bear-cli untagged --token TOKEN
-      bear-cli untagged --search "filter" --token TOKEN
-      bear-cli todo --token TOKEN
-      bear-cli today --token TOKEN
-      bear-cli add-text --title "Note Title" --text "New text" --token TOKEN
-      bear-cli add-text --id NOTE_ID --text "New text" --mode prepend --token TOKEN
-      bear-cli grab-url --url "https://example.com" --token TOKEN
-      bear-cli create --title "New Note" --text "Content" --tags "tag1,tag2" --token TOKEN
+      bearcli open-note --title "Note Title" --token TOKEN
+      bearcli open-note --id NOTE_ID --token TOKEN
+      bearcli search --term "search query" --token TOKEN
+      bearcli search --tag "tag/name" --token TOKEN
+      bearcli tags --token TOKEN
+      bearcli open-tag --name "tag/name" --token TOKEN
+      bearcli untagged --token TOKEN
+      bearcli untagged --search "filter" --token TOKEN
+      bearcli todo --token TOKEN
+      bearcli today --token TOKEN
+      bearcli add-text --title "Note Title" --text "New text" --token TOKEN
+      bearcli add-text --id NOTE_ID --text "New text" --mode prepend --token TOKEN
+      bearcli grab-url --url "https://example.com" --token TOKEN
+      bearcli create --title "New Note" --text "Content" --tags "tag1,tag2" --token TOKEN
 
     Commands:
       open-note  Read a note by title or ID
@@ -390,6 +390,34 @@ guard let url = bearURL else {
     exit(1)
 }
 
+// Check if Bear is running, start it if needed
+let bearBundleID = "net.shinyfrog.bear"
+let bearWasRunning = NSWorkspace.shared.runningApplications.contains { $0.bundleIdentifier == bearBundleID }
+
+if !bearWasRunning {
+    fputs("Bear is not running. Starting Bear...\n", stderr)
+    guard let bearURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bearBundleID) else {
+        fputs("Error: Bear is not installed\n", stderr)
+        exit(1)
+    }
+    let config = NSWorkspace.OpenConfiguration()
+    config.activates = false
+    config.hides = true
+    let semaphore = DispatchSemaphore(value: 0)
+    var launchError: Error?
+    NSWorkspace.shared.openApplication(at: bearURL, configuration: config) { _, error in
+        launchError = error
+        semaphore.signal()
+    }
+    semaphore.wait()
+    if let error = launchError {
+        fputs("Error: Failed to start Bear: \(error.localizedDescription)\n", stderr)
+        exit(1)
+    }
+    // Give Bear time to initialize and register its URL handler
+    Thread.sleep(forTimeInterval: 2.0)
+}
+
 // Set up app with URL handler
 let app = NSApplication.shared
 let handler = CallbackHandler()
@@ -478,6 +506,14 @@ if let result = handler.result {
                 }
             }
         }
+    }
+}
+
+// If we started Bear, quit it
+if !bearWasRunning {
+    if let bearApp = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == bearBundleID }) {
+        fputs("Done, closing Bear...\n", stderr)
+        bearApp.terminate()
     }
 }
 

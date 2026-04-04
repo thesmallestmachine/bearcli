@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "bear-cli",
+    name: "bearcli",
     platforms: [.macOS(.v12)],
     targets: [
         .executableTarget(
-            name: "bear-cli",
-            path: "Sources/BearCLI"
+            name: "bearcli",
+            path: "Sources/bearcli"
         )
     ]
 )

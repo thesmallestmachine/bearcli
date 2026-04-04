@@ -1,5 +1,5 @@
 .build/
 .swiftpm/
-BearCLI.app/
+bearcli.app/
 .DS_Store
 .claude/
