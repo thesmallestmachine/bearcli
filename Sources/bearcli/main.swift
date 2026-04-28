@@ -269,16 +269,28 @@ func parseArgs() -> [String: String] {
 
     parsed["command"] = args[1]
 
+    // Flags that carry no value — presence alone means "true"
+    let booleanFlags: Set<String> = ["json"]
+
     var i = 2
     while i < args.count {
         let arg = args[i]
         if arg.hasPrefix("--") {
             let key = String(arg.dropFirst(2))
-            if i + 1 < args.count, !args[i + 1].hasPrefix("--") {
+            if booleanFlags.contains(key) {
+                parsed[key] = "true"
+                i += 1
+            } else if i + 1 < args.count, !args[i + 1].hasPrefix("--") {
                 parsed[key] = args[i + 1]
                 i += 2
             } else {
-                parsed[key] = "true"
+                // Non-boolean flag with no following value.
+                // --new-line can be used without "yes" and means "yes".
+                // All other flags are left unset so existing guards surface a
+                // clear "required" error instead of silently using "true".
+                if key == "new-line" {
+                    parsed[key] = "yes"
+                }
                 i += 1
             }
         } else {
